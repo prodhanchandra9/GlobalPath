@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlobalPath — Study Abroad Cost Calculator for Bangladeshi Students</title>
+<meta name="description" content="Calculate tuition, living costs, visa fees, and required documents for studying abroad. Built for Bangladeshi students with BDT currency support.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23b85d3f%22/><text x=%2250%22 y=%2266%22 font-size=%2250%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial%22 font-weight=%22700%22>GP</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#141413; --light:#faf9f5; --mid:#6b6a64; --lgray:#e8e6dc;
+  --orange:#b85d3f; --orange-bright:#d97757; --blue:#4a7ab0; --green:#5a6e44;
+  --orange-soft:#f5e0d4; --blue-soft:#dde8f3; --green-soft:#dde2cf;
+  --orange-dark:#9a4a30; --border:#c9c5b5;
+  --text:#141413; --text-muted:#3d3d3a; --text-soft:#5a5a55;
+}
+body{font-family:'Lora',Georgia,serif;background:var(--light);color:var(--text);min-height:100vh;line-height:1.6}
+h1,h2,h3,h4,.heading{font-family:'Poppins',Arial,sans-serif;letter-spacing:-0.01em}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:var(--light);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:38px;height:38px;border-radius:10px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;color:#ffffff}
+.logo-text{font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;color:var(--text)}
+.logo-text span{color:var(--orange)}
+.nav-tag{font-size:12px;color:var(--text);font-family:'Poppins',sans-serif;font-weight:500;padding:4px 12px;border:1px solid var(--border);border-radius:20px;letter-spacing:0.3px;background:var(--light)}
+
+.hero{text-align:center;padding:3rem 2rem 2rem;background:linear-gradient(180deg,var(--light) 0%,#f0eddf 100%);border-bottom:1px solid var(--border)}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--orange-soft);color:var(--orange-dark);padding:6px 14px;border-radius:20px;font-size:11px;font-family:'Poppins',sans-serif;font-weight:600;margin-bottom:1.2rem;letter-spacing:0.6px;text-transform:uppercase;border:1px solid #e6c5b3}
+.hero h1{font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:700;line-height:1.2;margin-bottom:0.8rem;color:var(--text);font-family:'Poppins',sans-serif}
+.hero h1 em{color:var(--orange);font-style:normal}
+.hero p{color:var(--text-muted);max-width:540px;margin:0 auto 1.8rem;font-size:14px;font-family:'Lora',serif}
+
+.tab-bar{display:flex;justify-content:center;gap:8px;padding:0 1.5rem 2rem;flex-wrap:wrap;background:#f0eddf}
+.tab-btn{padding:10px 18px;border-radius:24px;border:1.5px solid var(--border);background:#ffffff;color:var(--text);font-size:13px;font-family:'Poppins',sans-serif;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.2px}
+.tab-btn:hover{border-color:var(--text);background:var(--lgray);color:var(--text)}
+.tab-btn.active{background:var(--text);border-color:var(--text);color:#ffffff}
+
+.global-bar{max-width:1100px;margin:1.5rem auto 0;padding:0 1.5rem;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.global-bar-label{font-size:12px;color:var(--text-muted);font-family:'Poppins',sans-serif;font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
+.currency-toggle{display:flex;background:#ffffff;border:1.5px solid var(--border);border-radius:10px;padding:3px;gap:2px}
+.curr-opt{padding:6px 14px;font-size:12px;font-family:'Poppins',sans-serif;font-weight:600;color:var(--text);border-radius:7px;cursor:pointer;border:none;background:transparent}
+.curr-opt:hover{background:var(--lgray)}
+.curr-opt.active{background:var(--orange);color:#ffffff}
+.share-btn{padding:7px 14px;border-radius:8px;background:#ffffff;border:1.5px solid var(--border);color:var(--text);font-size:12px;font-family:'Poppins',sans-serif;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px}
+.share-btn:hover{background:var(--orange-soft);border-color:var(--orange);color:var(--orange-dark)}
+
+.content{max-width:1100px;margin:1rem auto 0;padding:0 1.5rem 4rem}
+.panel{display:none}
+.panel.active{display:block}
+
+.card{background:#ffffff;border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+.card-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;margin-bottom:1.2rem;color:var(--text);display:flex;align-items:center;gap:8px}
+
+.calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:760px){.calc-layout{grid-template-columns:1fr}}
+
+.form-group{margin-bottom:0.9rem}
+label{display:block;font-size:11px;font-family:'Poppins',sans-serif;font-weight:600;color:var(--text-muted);margin-bottom:5px;letter-spacing:0.5px;text-transform:uppercase}
+select,input[type=number]{width:100%;padding:10px 12px;border-radius:8px;background:#ffffff;border:1.5px solid var(--border);color:var(--text);font-size:13.5px;font-family:'Lora',serif;outline:none;transition:border-color 0.2s;appearance:none;cursor:pointer}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23141413' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+select:focus,input:focus{border-color:var(--orange);outline:2px solid var(--orange-soft)}
+
+.slider-row{display:flex;align-items:center;gap:10px;margin-bottom:0.9rem}
+.slider-row label{margin:0;white-space:nowrap;min-width:115px}
+input[type=range]{flex:1;height:5px;border-radius:2px;background:var(--lgray);accent-color:var(--orange)}
+.slider-val{font-size:13px;font-family:'Poppins',sans-serif;font-weight:600;color:var(--orange-dark);min-width:75px;text-align:right}
+
+.result-card{background:var(--text);color:var(--light);border-radius:14px;padding:1.5rem;border:1px solid var(--text)}
+.result-label{font-size:11px;color:#d8d4c5;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;font-family:'Poppins',sans-serif;font-weight:600}
+.result-total{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:700;color:#e89270;line-height:1.1}
+.result-sub{font-size:12px;color:#b0aea5;margin-top:6px;font-family:'Poppins',sans-serif}
+.result-breakdown{margin-top:1.2rem;display:flex;flex-direction:column;gap:0}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #2c2c2a;font-size:13px}
+.result-row:last-child{border-bottom:none}
+.result-row-label{color:#e8e6dc;font-family:'Lora',serif}
+.result-row-val{font-family:'Poppins',sans-serif;font-weight:600;color:#ffffff}
+.total-row{border-top:1px solid #5a5a55 !important;border-bottom:none !important;padding-top:14px !important;margin-top:6px}
+.total-row .result-row-val{color:#e89270;font-size:14px}
+
+.action-buttons{display:flex;gap:8px;margin-top:1rem}
+.action-btn{flex:1;padding:10px;border-radius:8px;background:#ffffff;border:1.5px solid var(--border);color:var(--text);font-size:12px;font-family:'Poppins',sans-serif;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.action-btn:hover{border-color:var(--orange);background:var(--orange-soft);color:var(--orange-dark)}
+.action-btn.primary{background:var(--orange);border-color:var(--orange);color:#ffffff}
+.action-btn.primary:hover{background:var(--orange-dark);border-color:var(--orange-dark);color:#ffffff}
+
+.country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem}
+.country-card{background:#ffffff;border:1.5px solid var(--border);border-radius:12px;padding:1.2rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.country-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+.country-card:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:0 6px 18px rgba(184,93,63,0.12)}
+.country-card:hover::before{transform:scaleX(1)}
+.country-flag{font-size:30px;margin-bottom:8px}
+.country-name{font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:4px}
+.country-cost{font-family:'Poppins',sans-serif;font-size:12px;color:var(--orange-dark);font-weight:600;margin-bottom:4px}
+.country-bdt{font-size:11px;color:var(--text-muted);margin-bottom:8px;font-family:'Poppins',sans-serif;font-weight:500}
+.country-tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:10px;padding:3px 8px;border-radius:20px;background:var(--lgray);color:var(--text);font-family:'Poppins',sans-serif;font-weight:500;border:1px solid var(--border)}
+.tag.green-tag{background:var(--green-soft);color:#3d4a2c;border-color:#a8b890}
+.tag.blue-tag{background:var(--blue-soft);color:#2c4866;border-color:#a8c0d8}
+
+.detail-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(20,20,19,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
+.detail-overlay.open{display:flex}
+.detail-box{background:var(--light);border:1px solid var(--border);border-radius:18px;padding:2rem;max-width:640px;width:100%;max-height:88vh;overflow-y:auto}
+.detail-header{display:flex;align-items:center;gap:14px;margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1.5px solid var(--border)}
+.detail-flag{font-size:36px}
+.detail-title{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;color:var(--text)}
+.detail-subtitle{font-size:13px;color:var(--text-muted);margin-top:2px;font-family:'Poppins',sans-serif;font-weight:500}
+.close-btn{margin-left:auto;background:var(--lgray);border:1.5px solid var(--border);color:var(--text);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif}
+.close-btn:hover{background:var(--orange);color:#ffffff;border-color:var(--orange)}
+
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.2rem}
+.cost-item{background:#ffffff;border-radius:10px;padding:12px;border:1px solid var(--border)}
+.cost-item-label{font-size:10px;font-family:'Poppins',sans-serif;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.cost-item-val{font-size:14px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--text)}
+.cost-item-sub{font-size:11px;color:var(--text-muted);font-weight:500}
+
+.doc-section{margin-bottom:1.2rem}
+.doc-section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--orange-dark);margin-bottom:8px;font-family:'Poppins',sans-serif;font-weight:700;display:flex;align-items:center;gap:6px}
+.doc-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);font-family:'Lora',serif}
+.doc-item:last-child{border-bottom:none}
+.doc-check{color:var(--green);font-size:13px;flex-shrink:0;margin-top:2px;font-family:'Poppins',sans-serif;font-weight:700}
+.info-block{font-size:13px;color:var(--text);line-height:1.7;padding:12px 14px;background:#ffffff;border-radius:8px;border-left:3px solid var(--blue);font-family:'Lora',serif}
+.info-block.green{border-left-color:var(--green);background:#f5f7ed}
+.info-block.orange{border-left-color:var(--orange);background:#fdf3ed}
+.info-block.blue{background:#f0f5fa}
+.info-block strong{font-family:'Poppins',sans-serif;font-weight:700}
+
+.detail-actions{display:flex;gap:8px;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+
+.visa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1rem}
+.visa-card{background:#ffffff;border:1.5px solid var(--border);border-radius:12px;padding:1.3rem;transition:all 0.2s}
+.visa-card:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:0 4px 12px rgba(184,93,63,0.08)}
+.visa-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.visa-flag{font-size:24px}
+.visa-country{font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.visa-type{font-size:11px;color:var(--text-muted);font-family:'Poppins',sans-serif;font-weight:500}
+.fee-badge{background:var(--orange-soft);border:1px solid #e6c5b3;border-radius:8px;padding:12px;margin-bottom:12px}
+.fee-amount{font-size:20px;font-weight:700;font-family:'Poppins',sans-serif;color:var(--orange-dark)}
+.fee-bdt{font-size:12px;color:var(--orange-dark);font-family:'Poppins',sans-serif;font-weight:600;margin-top:2px}
+.fee-label{font-size:10px;color:var(--text-muted);font-family:'Poppins',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-top:4px}
+.visa-info{font-size:12.5px;color:var(--text);line-height:1.65;font-family:'Lora',serif}
+.visa-info b{font-family:'Poppins',sans-serif;font-weight:700;color:var(--text)}
+
+.currency-layout{max-width:580px;margin:0 auto}
+.currency-box{background:#ffffff;border:1.5px solid var(--border);border-radius:12px;padding:1.3rem;margin-bottom:0.8rem}
+.currency-row{display:flex;gap:10px;align-items:center}
+.currency-flag2{font-size:22px}
+.swap-btn{display:flex;align-items:center;justify-content:center;width:100%;padding:11px;border-radius:8px;background:#ffffff;border:1.5px dashed var(--border);color:var(--text);cursor:pointer;font-size:13px;margin:-2px 0;font-family:'Poppins',sans-serif;font-weight:600}
+.swap-btn:hover{color:var(--orange);border-color:var(--orange);background:var(--orange-soft)}
+.conv-result{text-align:center;padding:1.5rem;background:var(--text);color:var(--light);border-radius:12px;margin-top:0.8rem}
+.conv-amount{font-family:'Poppins',sans-serif;font-size:2.1rem;font-weight:700;color:#e89270}
+.conv-label{font-size:13px;color:#d8d4c5;margin-top:6px;font-family:'Poppins',sans-serif;font-weight:500}
+.rate-note{font-size:11px;color:#b0aea5;margin-top:8px;font-family:'Lora',serif;font-style:italic}
+.common-rates{margin-top:1.2rem}
+.common-rates h3{font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:10px;font-family:'Poppins',sans-serif;font-weight:600}
+.rates-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rate-pill{background:#ffffff;border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.rate-pair{font-size:10px;color:var(--text-muted);font-family:'Poppins',sans-serif;font-weight:600}
+.rate-val{font-size:13px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--text);margin-top:2px}
+
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem;border:1px solid var(--border)}
+.stat-item{padding:1rem;text-align:center;background:#ffffff}
+.stat-num{font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;color:var(--orange-dark)}
+.stat-lbl{font-size:10px;color:var(--text-muted);margin-top:2px;font-family:'Poppins',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+
+.search-bar{display:flex;gap:8px;margin-bottom:1rem}
+.search-input{flex:1;padding:11px 14px;border-radius:10px;background:#ffffff;border:1.5px solid var(--border);color:var(--text);font-size:14px;font-family:'Lora',serif;outline:none}
+.search-input:focus{border-color:var(--orange);outline:2px solid var(--orange-soft)}
+.search-input::placeholder{color:var(--text-muted)}
+.region-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.2rem}
+.region-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-family:'Poppins',sans-serif;font-weight:600;background:#ffffff;border:1.5px solid var(--border);color:var(--text);cursor:pointer;transition:all 0.2s}
+.region-btn:hover{border-color:var(--orange);color:var(--orange-dark);background:var(--orange-soft)}
+.region-btn.active{background:var(--text);border-color:var(--text);color:#ffffff}
+
+.bd-banner{background:linear-gradient(90deg,var(--green-soft),var(--orange-soft));border:1.5px solid #c9b89e;border-radius:12px;padding:14px 18px;margin-bottom:1.5rem;display:flex;align-items:center;gap:14px}
+.bd-flag{font-size:26px}
+.bd-text{font-size:13.5px;color:var(--text);font-family:'Lora',serif;line-height:1.6}
+.bd-text b{font-family:'Poppins',sans-serif;color:var(--text);font-weight:700}
+
+.subject-info{background:var(--blue-soft);border:1px solid #a8c0d8;border-radius:8px;padding:10px 12px;margin-top:0.8rem;font-size:12px;color:#2c4866;font-family:'Lora',serif;line-height:1.6;display:none}
+.subject-info.show{display:block}
+
+.tips-box{font-size:13px;color:var(--text);line-height:1.7;font-family:'Lora',serif}
+
+.compare-section{margin-top:1.5rem}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.5rem;background:var(--border);border-radius:10px;overflow:hidden;border:1.5px solid var(--border)}
+.compare-col{background:#ffffff;padding:1rem}
+.compare-col-header{display:flex;align-items:center;gap:8px;margin-bottom:0.8rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border)}
+.compare-row{display:flex;justify-content:space-between;font-size:12px;padding:6px 0;color:var(--text);font-family:'Lora',serif}
+.compare-row b{font-family:'Poppins',sans-serif;font-weight:600}
+
+footer{background:var(--text);color:var(--light);padding:2rem 1.5rem;text-align:center;margin-top:3rem}
+footer h4{font-family:'Poppins',sans-serif;font-size:14px;color:#e89270;margin-bottom:0.5rem;font-weight:600}
+footer p{font-size:12px;color:#b0aea5;font-family:'Lora',serif;max-width:600px;margin:0 auto;line-height:1.6}
+footer a{color:#e89270;text-decoration:none}
+
+button:focus-visible, select:focus-visible, input:focus-visible, .country-card:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+}
+
+@media print {
+  nav, .tab-bar, .global-bar, .action-buttons, .detail-actions, .close-btn, .share-btn, footer { display: none !important; }
+  body { background: white; }
+  .panel { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">GP</div>
+    <div class="logo-text">Global<span>Path</span></div>
+  </div>
+  <div class="nav-tag">For Bangladeshi Students 🇧🇩</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">✦ Study Abroad Cost Calculator</div>
+  <h1>Plan Your <em>Global Education</em><br>From Dhaka to the World</h1>
+  <p>Calculate tuition, living, visa fees and required documents — country by country, in Bangladeshi Taka or local currency.</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('calc',this)">🧮 Cost Calculator</button>
+  <button class="tab-btn" onclick="switchTab('countries',this)">🌍 Country Documents</button>
+  <button class="tab-btn" onclick="switchTab('visa',this)">📋 Visa Fees</button>
+  <button class="tab-btn" onclick="switchTab('compare',this)">⚖️ Compare</button>
+  <button class="tab-btn" onclick="switchTab('currency',this)">💱 Currency</button>
+</div>
+
+<div class="global-bar">
+  <button class="share-btn" onclick="shareSite()">🔗 Share</button>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span class="global-bar-label">Display Currency</span>
+    <div class="currency-toggle">
+      <button class="curr-opt active" onclick="setCurrency('BDT',this)">🇧🇩 BDT</button>
+      <button class="curr-opt" onclick="setCurrency('USD',this)">🇺🇸 USD</button>
+      <button class="curr-opt" onclick="setCurrency('LOCAL',this)">🌍 Local</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<div class="panel active" id="panel-calc">
+  <div class="bd-banner">
+    <span class="bd-flag">🇧🇩</span>
+    <div class="bd-text"><b>Tailored for Bangladeshi students.</b> All costs auto-convert to Taka. Bank statement requirements, IELTS expectations, and Dhaka-specific embassy info included throughout.</div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">17</div><div class="stat-lbl">Countries</div></div>
+    <div class="stat-item"><div class="stat-num">30+</div><div class="stat-lbl">Subjects</div></div>
+    <div class="stat-item"><div class="stat-num">8</div><div class="stat-lbl">Cost Items</div></div>
+    <div class="stat-item"><div class="stat-num">৳ Live</div><div class="stat-lbl">Conversion</div></div>
+  </div>
+
+  <div class="calc-layout">
+    <div>
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-title">🎓 Academic Details</div>
+        <div class="form-group"><label>Destination Country</label><select id="dest-country" onchange="updateCalc()"></select></div>
+        <div class="form-group"><label>Study Level</label>
+          <select id="study-level" onchange="updateCalc()">
+            <option value="bachelors">Bachelor's Degree (3–4 yrs)</option>
+            <option value="masters">Master's Degree (1–2 yrs)</option>
+            <option value="phd">PhD / Doctorate (3–5 yrs)</option>
+            <option value="diploma">Foundation / Diploma (1 yr)</option>
+            <option value="language">Language / Pathway Course (6–12 mo)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Specific Subject / Major</label>
+          <select id="subject" onchange="updateCalc()">
+            <optgroup label="Engineering &amp; Tech">
+              <option value="cs">Computer Science / Software Engineering</option>
+              <option value="ai">Artificial Intelligence / Machine Learning</option>
+              <option value="data">Data Science / Analytics</option>
+              <option value="eee">Electrical &amp; Electronic Engineering</option>
+              <option value="mech">Mechanical Engineering</option>
+              <option value="civil">Civil &amp; Construction Engineering</option>
+              <option value="aero">Aerospace Engineering</option>
+              <option value="biomed">Biomedical Engineering</option>
+              <option value="cyber">Cybersecurity</option>
+            </optgroup>
+            <optgroup label="Business &amp; Finance">
+              <option value="mba">MBA / Master of Business Admin</option>
+              <option value="finance">Finance / Banking</option>
+              <option value="accounting">Accounting / ACCA</option>
+              <option value="marketing">Marketing / Digital Marketing</option>
+              <option value="economics">Economics</option>
+              <option value="supplychain">Supply Chain &amp; Logistics</option>
+            </optgroup>
+            <optgroup label="Health &amp; Medicine">
+              <option value="medicine">MBBS / Medicine</option>
+              <option value="dentistry">Dentistry / BDS</option>
+              <option value="pharmacy">Pharmacy / Pharm.D</option>
+              <option value="nursing">Nursing</option>
+              <option value="publichealth">Public Health (MPH)</option>
+            </optgroup>
+            <optgroup label="Sciences">
+              <option value="biotech">Biotechnology / Biochemistry</option>
+              <option value="environmental">Environmental Science</option>
+              <option value="physics">Physics / Astronomy</option>
+              <option value="chemistry">Chemistry</option>
+            </optgroup>
+            <optgroup label="Arts, Law &amp; Social Sciences">
+              <option value="law">Law / LLB / LLM</option>
+              <option value="architecture">Architecture &amp; Urban Design</option>
+              <option value="design">Graphic Design / UX Design</option>
+              <option value="ir">International Relations</option>
+              <option value="psychology">Psychology</option>
+              <option value="hospitality">Hospitality &amp; Tourism</option>
+            </optgroup>
+          </select>
+          <div class="subject-info" id="subject-info"></div>
+        </div>
+        <div class="form-group"><label>Duration (Years)</label>
+          <select id="duration" onchange="updateCalc()">
+            <option value="1">1 Year</option><option value="2">2 Years</option><option value="3" selected>3 Years</option>
+            <option value="4">4 Years</option><option value="5">5 Years</option><option value="6">6 Years</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏠 Living Preferences</div>
+        <div class="form-group"><label>Accommodation Type</label>
+          <select id="accom" onchange="updateCalc()">
+            <option value="shared">Shared Student House</option>
+            <option value="dorm">University Dormitory / Hostel</option>
+            <option value="private">Private Studio Apartment</option>
+            <option value="homestay">Homestay / Host Family</option>
+          </select>
+        </div>
+        <div class="form-group"><label>City Tier</label>
+          <select id="city-tier" onchange="updateCalc()">
+            <option value="capital">Capital / Major City</option>
+            <option value="mid" selected>Mid-size University City</option>
+            <option value="small">Small Town / Rural</option>
+          </select>
+        </div>
+        <div class="slider-row"><label>Monthly Food</label>
+          <input type="range" min="100" max="800" value="350" id="food-budget" step="25" oninput="updateCalc()">
+          <span class="slider-val" id="food-val">$350</span>
+        </div>
+        <div class="slider-row"><label>Monthly Transport</label>
+          <input type="range" min="30" max="300" value="100" id="transport" step="10" oninput="updateCalc()">
+          <span class="slider-val" id="tr-val">$100</span>
+        </div>
+        <div class="slider-row"><label>Monthly Leisure</label>
+          <input type="range" min="50" max="500" value="150" id="leisure" step="25" oninput="updateCalc()">
+          <span class="slider-val" id="lei-val">$150</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="result-card">
+        <div class="result-label">Estimated Total Cost</div>
+        <div class="result-total" id="result-total">৳ 0</div>
+        <div class="result-sub">Over <span id="res-duration">3</span> years in <span id="res-country">UK</span> • <span id="res-currency">BDT</span></div>
+        <div class="result-breakdown">
+          <div class="result-row"><span class="result-row-label">📚 Tuition Fees</span><span class="result-row-val" id="r-tuition">—</span></div>
+          <div class="result-row"><span class="result-row-label">🏠 Accommodation</span><span class="result-row-val" id="r-accom">—</span></div>
+          <div class="result-row"><span class="result-row-label">🍽️ Food &amp; Groceries</span><span class="result-row-val" id="r-food">—</span></div>
+          <div class="result-row"><span class="result-row-label">🚌 Transport</span><span class="result-row-val" id="r-transport">—</span></div>
+          <div class="result-row"><span class="result-row-label">🎉 Leisure &amp; Social</span><span class="result-row-val" id="r-leisure">—</span></div>
+          <div class="result-row"><span class="result-row-label">📄 Visa &amp; SEVIS / IHS</span><span class="result-row-val" id="r-visa">—</span></div>
+          <div class="result-row"><span class="result-row-label">📖 Books &amp; Supplies</span><span class="result-row-val" id="r-books">—</span></div>
+          <div class="result-row"><span class="result-row-label">✈️ Flights from Dhaka</span><span class="result-row-val" id="r-flights">—</span></div>
+          <div class="result-row total-row"><span class="result-row-label">🔢 Avg Monthly Spend</span><span class="result-row-val" id="r-monthly">—</span></div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="action-btn primary" onclick="printResult()">🖨️ Print / Save PDF</button>
+        <button class="action-btn" onclick="resetCalc()">↻ Reset</button>
+      </div>
+
+      <div class="card" style="margin-top:1rem">
+        <div class="card-title">💡 Bangladesh-Specific Tips</div>
+        <div id="tips-box" class="tips-box"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-countries">
+  <div class="search-bar"><input class="search-input" placeholder="Search country (e.g. Hungary, Malta, Japan)..." id="country-search" oninput="filterCountries()"></div>
+  <div class="region-filter">
+    <button class="region-btn active" onclick="filterRegion('all',this)">🌐 All Regions</button>
+    <button class="region-btn" onclick="filterRegion('europe',this)">🇪🇺 Europe</button>
+    <button class="region-btn" onclick="filterRegion('cheap-eu',this)">💰 Affordable EU</button>
+    <button class="region-btn" onclick="filterRegion('oceania',this)">🌏 Oceania</button>
+    <button class="region-btn" onclick="filterRegion('americas',this)">🌎 Americas</button>
+    <button class="region-btn" onclick="filterRegion('asia',this)">🌏 Asia</button>
+  </div>
+  <div class="country-grid" id="country-grid"></div>
+</div>
+
+<div class="panel" id="panel-visa">
+  <div class="bd-banner">
+    <span class="bd-flag">📍</span>
+    <div class="bd-text"><b>Most embassies for Bangladeshi students are in Dhaka or New Delhi.</b> Some require travel to New Delhi (e.g. Hungary, Malta, Czech Republic). VFS Global handles many applications locally.</div>
+  </div>
+  <div class="visa-grid" id="visa-grid"></div>
+</div>
+
+<div class="panel" id="panel-compare">
+  <div class="bd-banner">
+    <span class="bd-flag">⚖️</span>
+    <div class="bd-text"><b>Compare up to 3 countries side-by-side.</b> See tuition, living costs, visa fees, work allowance, and post-study options at a glance.</div>
+  </div>
+  <div class="card" style="margin-bottom:1.2rem">
+    <div class="card-title">Choose countries to compare</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+      <div><label>Country 1</label><select id="cmp-1" onchange="renderCompare()"></select></div>
+      <div><label>Country 2</label><select id="cmp-2" onchange="renderCompare()"></select></div>
+      <div><label>Country 3</label><select id="cmp-3" onchange="renderCompare()"></select></div>
+    </div>
+  </div>
+  <div id="compare-output"></div>
+</div>
+
+<div class="panel" id="panel-currency">
+  <div class="currency-layout">
+    <div class="currency-box">
+      <div class="form-group" style="margin-bottom:0.8rem">
+        <label>From Currency</label>
+        <div class="currency-row">
+          <span class="currency-flag2" id="from-flag">🇧🇩</span>
+          <select id="from-currency" onchange="convertCurrency()" style="flex:1">
+            <option value="BDT">BDT – Bangladeshi Taka</option>
+            <option value="USD">USD – US Dollar</option>
+            <option value="EUR">EUR – Euro</option>
+            <option value="GBP">GBP – British Pound</option>
+            <option value="CAD">CAD – Canadian Dollar</option>
+            <option value="AUD">AUD – Australian Dollar</option>
+            <option value="HUF">HUF – Hungarian Forint</option>
+            <option value="JPY">JPY – Japanese Yen</option>
+            <option value="INR">INR – Indian Rupee</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Amount</label>
+        <input type="number" id="conv-amount" value="1000000" oninput="convertCurrency()" placeholder="Enter amount">
+      </div>
+    </div>
+
+    <button class="swap-btn" onclick="swapCurrencies()">⇅ Swap Currencies</button>
+
+    <div class="currency-box" style="margin-top:0.8rem">
+      <div class="form-group" style="margin-bottom:0">
+        <label>To Currency</label>
+        <div class="currency-row">
+          <span class="currency-flag2" id="to-flag">🇬🇧</span>
+          <select id="to-currency" onchange="convertCurrency()" style="flex:1">
+            <option value="GBP">GBP – British Pound</option>
+            <option value="CAD">CAD – Canadian Dollar</option>
+            <option value="AUD">AUD – Australian Dollar</option>
+            <option value="EUR">EUR – Euro</option>
+            <option value="USD">USD – US Dollar</option>
+            <option value="HUF">HUF – Hungarian Forint</option>
+            <option value="SEK">SEK – Swedish Krona</option>
+            <option value="JPY">JPY – Japanese Yen</option>
+            <option value="BDT">BDT – Bangladeshi Taka</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="conv-result">
+      <div class="conv-amount" id="conv-result-val">—</div>
+      <div class="conv-label" id="conv-result-label">Converted amount appears here</div>
+      <div class="rate-note">* Approximate rates. Actual bank/transfer rates vary.</div>
+    </div>
+
+    <div class="common-rates">
+      <h3>Quick rates from Bangladeshi Taka (1 BDT)</h3>
+      <div class="rates-grid">
+        <div class="rate-pill"><div class="rate-pair">BDT → USD</div><div class="rate-val">0.0091</div></div>
+        <div class="rate-pill"><div class="rate-pair">BDT → GBP</div><div class="rate-val">0.0068</div></div>
+        <div class="rate-pill"><div class="rate-pair">BDT → EUR</div><div class="rate-val">0.0083</div></div>
+        <div class="rate-pill"><div class="rate-pair">BDT → CAD</div><div class="rate-val">0.0124</div></div>
+        <div class="rate-pill"><div class="rate-pair">BDT → AUD</div><div class="rate-val">0.0138</div></div>
+        <div class="rate-pill"><div class="rate-pair">BDT → HUF</div><div class="rate-val">3.21</div></div>
+      </div>
+      <h3 style="margin-top:1rem">Bangla → Foreign (1 lac BDT = ?)</h3>
+      <div class="rates-grid">
+        <div class="rate-pill"><div class="rate-pair">100,000 BDT</div><div class="rate-val">$910 USD</div></div>
+        <div class="rate-pill"><div class="rate-pair">100,000 BDT</div><div class="rate-val">£680 GBP</div></div>
+        <div class="rate-pill"><div class="rate-pair">100,000 BDT</div><div class="rate-val">€830 EUR</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="detail-overlay" id="detail-overlay"><div class="detail-box" id="detail-box"></div></div>
+
+<footer>
+  <h4>GlobalPath</h4>
+  <p>Study abroad cost calculator for Bangladeshi students. All figures are estimates based on publicly available data — always verify with official embassy and university sources before applying. Built with care for the next generation of global learners.</p>
+  <p style="margin-top:0.5rem;font-size:11px">© 2026 GlobalPath • Made for 🇧🇩</p>
+</footer>
+
+<script>
+const COUNTRIES = [
+  {id:'uk',flag:'🇬🇧',name:'United Kingdom',region:'europe',cost:'£15,000–£38,000/yr',
+   tags:['English','PSW Visa','Top universities'],currency:'GBP',
+   tuitionMin:15000,tuitionMax:38000,livingMin:1200,livingMax:2200,
+   visaFee:524,extraFee:'IHS £776/yr',processing:'3–8 weeks',
+   bankReq:'£1,334/mo (London) or £1,023/mo (rest) × 9 months',
+   embassy:'British High Commission, Dhaka & VFS Global',
+   docs:['Valid Passport (6+ months)','CAS letter from UK university','IELTS 6.0–7.0 (UKVI for some courses)','Bank statement 28 days, Bangladesh-based','Tuberculosis (TB) test from IOM Dhaka','SSC, HSC + transcripts (notarized + apostilled)','Statement of Purpose (SOP)','ATAS certificate (STEM PG students)','CAS interview proof (academic)','Proof of accommodation','Sponsor letter & relationship proof'],
+   scholarships:'Chevening (full), Commonwealth, GREAT, university bursaries (£2k–10k)',
+   work:'20 hrs/week (term)',psw:'2-year Graduate Route visa',
+   bd:'Most popular destination. Apply via VFS Global Dhaka. Banks like EBL, BRAC, City offer student loan & forex services.'},
+  {id:'canada',flag:'🇨🇦',name:'Canada',region:'americas',cost:'CAD 20,000–45,000/yr',
+   tags:['PR Pathway','Co-op','PGWP'],currency:'CAD',
+   tuitionMin:18000,tuitionMax:40000,livingMin:1100,livingMax:2000,
+   visaFee:235,extraFee:'GIC CAD 20,635',processing:'4–16 weeks',
+   bankReq:'GIC + first year tuition + CAD 20,635 living proof',
+   embassy:'High Commission of Canada, Dhaka + VFS in Gulshan',
+   docs:['Valid Passport','LOA from DLI institution','Provincial Attestation Letter (PAL)','GIC certificate (CAD 20,635)','First-year tuition fee receipt','SSC, HSC, Bachelor transcripts (attested)','IELTS 6.0+ / Duolingo','Statement of Purpose','Medical exam (panel physicians Dhaka)','Police Clearance Certificate','Biometrics at VFS Dhaka','Family info form'],
+   scholarships:'Vanier, Banting, Canada-Bangladesh Scholar awards',
+   work:'24 hrs/week off-campus',psw:'Up to 3-year PGWP',
+   bd:'PAL + GIC are mandatory now. SDS stream discontinued. Apply via VFS Dhaka. PCC takes 2–3 weeks.'},
+  {id:'australia',flag:'🇦🇺',name:'Australia',region:'oceania',cost:'AUD 20,000–50,000/yr',
+   tags:['OSHC','Subclass 500','Beach lifestyle'],currency:'AUD',
+   tuitionMin:20000,tuitionMax:50000,livingMin:1500,livingMax:2500,
+   visaFee:1600,extraFee:'OSHC AUD 600+/yr',processing:'4–6 weeks',
+   bankReq:'AUD 24,505 living + tuition + AUD 2,500 travel',
+   embassy:'Australian High Commission, Dhaka + VFS',
+   docs:['Valid Passport','Confirmation of Enrolment (CoE)','Genuine Student (GS) statement','OSHC purchase proof','IELTS 6.0+ (5.5 each band)','Financial capacity proof','Bank statement 6 months','Academic transcripts (attested)','Health exam at IOM Dhaka','Police clearance','Statement of Purpose'],
+   scholarships:'Australia Awards (full), Destination Australia, RTP',
+   work:'48 hrs/fortnight',psw:'2–6 yrs Temp Graduate',
+   bd:'High visa fee + tightened GS requirement. Show strong return ties. IOM Dhaka for medical.'},
+  {id:'germany',flag:'🇩🇪',name:'Germany',region:'europe',cost:'€0–€3,000/yr',
+   tags:['Free public uni','Research hub','APS required'],currency:'EUR',
+   tuitionMin:0,tuitionMax:3000,livingMin:850,livingMax:1500,
+   visaFee:75,extraFee:'Insurance ~€120/mo',processing:'6–12 weeks',
+   bankReq:'€11,904/yr blocked account (Sperrkonto)',
+   embassy:'German Embassy Dhaka (visa via VFS Global)',
+   docs:['Valid Passport','APS Certificate (mandatory for BD!)','University admission letter','Blocked account €11,904 (Coracle/Fintiba/Expatrio)','Academic transcripts apostilled','German B2/C1 OR English IELTS 6.5','Health insurance (Mawista/Care Concept)','Motivation letter','CV in Europass','Biometric photos (35×45mm)','Visa form (long-stay D)'],
+   scholarships:'DAAD (FULL FUNDING), Erasmus+, Heinrich Böll, Konrad Adenauer',
+   work:'120 full days/yr',psw:'18-month job seeker visa',
+   bd:'APS Dhaka mandatory—takes 4–6 weeks. Free public unis = best value for BD students.'},
+  {id:'usa',flag:'🇺🇸',name:'United States',region:'americas',cost:'USD 25,000–65,000/yr',
+   tags:['F-1','OPT/STEM','#1 Universities'],currency:'USD',
+   tuitionMin:25000,tuitionMax:65000,livingMin:1500,livingMax:3000,
+   visaFee:185,extraFee:'SEVIS $350',processing:'3–10 weeks',
+   bankReq:'Full Cost of Attendance shown on I-20',
+   embassy:'US Embassy Dhaka (Baridhara) + interview required',
+   docs:['Valid Passport (6 months beyond stay)','I-20 from SEVIS school','SEVIS fee payment ($350)','DS-160 confirmation','Visa interview (Dhaka)','Bank statements + sponsor affidavit','SSC, HSC, transcripts (attested)','SAT/GRE/GMAT scores','TOEFL 80+ / IELTS 6.5+','Strong ties to BD proof','Statement of Purpose'],
+   scholarships:'Fulbright (full), Harvard/MIT/Yale need-based aid, TA/RA',
+   work:'20 hrs/week on-campus',psw:'12-mo OPT + 24-mo STEM',
+   bd:'F-1 interview at US Embassy Dhaka—book 2 months ahead. Strong CGPA + test scores essential. ~30% refusal rate.'},
+  {id:'hungary',flag:'🇭🇺',name:'Hungary',region:'cheap-eu',cost:'€2,500–€8,000/yr',
+   tags:['Stipendium','Affordable','EU degree'],currency:'EUR',
+   tuitionMin:2500,tuitionMax:8000,livingMin:500,livingMax:900,
+   visaFee:110,extraFee:'Residence permit ~€60',processing:'4–8 weeks',
+   bankReq:'€500/month proof for full duration',
+   embassy:'Hungary Embassy in New Delhi (no Dhaka office) — VFS in Dhaka',
+   docs:['Valid Passport','Acceptance Letter from Hungarian University','Stipendium Hungaricum award letter (if scholarship)','Bank statement showing €500/mo','Academic transcripts (English translated, apostilled)','IELTS 5.5–6.0','Motivation letter','Health insurance covering Schengen','Proof of accommodation in Hungary','Travel insurance €30,000 coverage','Birth certificate (apostilled)'],
+   scholarships:'Stipendium Hungaricum (FULL FUNDING + monthly stipend)',
+   work:'24 hrs/week',psw:'9-month residence',
+   bd:'🌟 Stipendium Hungaricum is fully funded. 100+ BD students yearly. Apply Jan–Feb at tka.hu.'},
+  {id:'malta',flag:'🇲🇹',name:'Malta',region:'cheap-eu',cost:'€8,000–€18,000/yr',
+   tags:['English-speaking','EU member','Mediterranean'],currency:'EUR',
+   tuitionMin:8000,tuitionMax:18000,livingMin:700,livingMax:1100,
+   visaFee:120,extraFee:'Residence card €27',processing:'8–12 weeks',
+   bankReq:'€14,400/yr (€48/day for 300 days)',
+   embassy:'Malta Embassy in New Delhi—visa via Identity Malta',
+   docs:['Valid Passport','Acceptance letter','Tuition fee receipt','Bank statement €14,400/yr','Health insurance €30,000+','IELTS 6.0+','Academic transcripts (legalized)','Police clearance certificate','Accommodation proof','Motivation letter','Visa form + photos'],
+   scholarships:'Endeavour Malta, Erasmus+, MCST research grants',
+   work:'20 hrs/week (after 13 weeks)',psw:'Job seeker permit',
+   bd:'English-medium island country, growing FinTech & iGaming hub. Lower competition than UK/Australia.'},
+  {id:'czech',flag:'🇨🇿',name:'Czech Republic',region:'cheap-eu',cost:'€0–€6,000/yr',
+   tags:['Free in Czech','Affordable EU','Student-friendly'],currency:'EUR',
+   tuitionMin:0,tuitionMax:6000,livingMin:450,livingMax:850,
+   visaFee:100,extraFee:'Residence permit',processing:'8–12 weeks',
+   bankReq:'CZK 124,500/yr (~€5,100)',
+   embassy:'Czech Embassy in New Delhi — visa appointment in Delhi',
+   docs:['Valid Passport','University admission letter','Bank statement CZK 124,500+','Accommodation proof (mandatory)','Health insurance (Czech-recognized)','Academic transcripts (apostilled, super-legalized)','Police clearance','Czech (B1) or English proof','Birth certificate (apostilled)','Marriage certificate (if applicable)'],
+   scholarships:'Czech Government Scholarship, Visegrad, Erasmus+',
+   work:'No limit (with permit)',psw:'9-month residence',
+   bd:'Free if studied in Czech! English programs €2k–€6k. Travel to Delhi for visa.'},
+  {id:'poland',flag:'🇵🇱',name:'Poland',region:'cheap-eu',cost:'€2,000–€6,000/yr',
+   tags:['Affordable','Schengen','Growing tech'],currency:'EUR',
+   tuitionMin:2000,tuitionMax:6000,livingMin:500,livingMax:900,
+   visaFee:80,extraFee:'Residence card €25',processing:'4–8 weeks',
+   bankReq:'PLN 776/month (~€175) + tuition',
+   embassy:'Polish Embassy in New Delhi + VFS in Dhaka',
+   docs:['Valid Passport','University acceptance letter','Tuition fee receipt','Bank statement PLN 9,300+/yr','Health insurance','IELTS 6.0 / Polish A2','Academic transcripts (apostilled)','Accommodation proof','Visa application + biometrics'],
+   scholarships:'NAWA, Erasmus+, Lane Kirkland',
+   work:'20 hrs/week',psw:'Job-seeking residence',
+   bd:'Krakow & Warsaw popular. AGH & Warsaw University of Technology accept many BD students.'},
+  {id:'netherlands',flag:'🇳🇱',name:'Netherlands',region:'europe',cost:'€8,000–€20,000/yr',
+   tags:['English programs','Cycling','Innovation'],currency:'EUR',
+   tuitionMin:8000,tuitionMax:20000,livingMin:900,livingMax:1600,
+   visaFee:228,extraFee:'BSN registration',processing:'4–8 weeks',
+   bankReq:'€14,094/yr',
+   embassy:'Netherlands Embassy Dhaka (Gulshan)',
+   docs:['Valid Passport','Unconditional offer + Nuffic certificate','MVV form (university applies)','Tuition fee payment','Bank statement €14,094/yr','IELTS 6.0–6.5','Academic transcripts (verified)','TB test (if required)','Birth certificate apostilled'],
+   scholarships:'Holland Scholarship (€5,000), Orange Tulip, Erasmus+',
+   work:'16 hrs/week',psw:'1-year Orientation Year',
+   bd:'University handles visa—easier process. TU Delft, Utrecht, Erasmus highly ranked.'},
+  {id:'france',flag:'🇫🇷',name:'France',region:'europe',cost:'€3,000–€12,000/yr',
+   tags:['Campus France','Low tuition','Culture'],currency:'EUR',
+   tuitionMin:3000,tuitionMax:12000,livingMin:800,livingMax:1500,
+   visaFee:99,extraFee:'OFII/CAF €60',processing:'3–6 weeks',
+   bankReq:'€615/month for 12 months (€7,380)',
+   embassy:'French Embassy Dhaka (mandatory Campus France interview)',
+   docs:['Valid Passport','Campus France approval (mandatory!)','University acceptance letter','Bank statement €7,380+','Health insurance','Academic transcripts (translated)','French B2 / IELTS 6.0+','Motivation letter','Accommodation proof','Visa application form'],
+   scholarships:'Eiffel Excellence (full), French Govt Scholarship, Erasmus+',
+   work:'964 hrs/year',psw:'12-month APS',
+   bd:'Campus France Dhaka interview is critical. ENS, Sciences Po, Sorbonne are top picks.'},
+  {id:'sweden',flag:'🇸🇪',name:'Sweden',region:'europe',cost:'SEK 80,000–200,000/yr',
+   tags:['SISGP','Innovation','Quality of life'],currency:'SEK',
+   tuitionMin:8000,tuitionMax:22000,livingMin:700,livingMax:1300,
+   visaFee:1500,extraFee:'',processing:'4–8 weeks',
+   bankReq:'SEK 10,584/month for 12 months',
+   embassy:'Swedish Embassy in Dhaka',
+   docs:['Valid Passport','Admission decision','Tuition fee 1st installment','Bank statement SEK 10,584/mo','Health insurance','IELTS 6.5+','Academic transcripts','Accommodation proof','Migrationsverket form'],
+   scholarships:'SISGP (FULL), Visby, university scholarships',
+   work:'No fixed limit',psw:'12-month residence',
+   bd:'KTH, Chalmers, Lund are world-class. SISGP funds 25+ BD students yearly.'},
+  {id:'ireland',flag:'🇮🇪',name:'Ireland',region:'europe',cost:'€10,000–€25,000/yr',
+   tags:['Stamp 2','English','Tech hub'],currency:'EUR',
+   tuitionMin:10000,tuitionMax:25000,livingMin:900,livingMax:1500,
+   visaFee:60,extraFee:'IRP €300',processing:'4–8 weeks',
+   bankReq:'€10,000/yr',
+   embassy:'Irish Embassy in New Delhi + VFS Dhaka',
+   docs:['Valid Passport','Letter of acceptance','Tuition fees paid receipt','Bank statement €10,000+','Health insurance','IELTS 6.5','Academic transcripts','Accommodation proof','Police clearance'],
+   scholarships:'Government of Ireland Scholarship, Walsh Fellowship',
+   work:'20 hrs/week',psw:"2-year Stamp 1G",
+   bd:'Tech hub with Google/Meta/Apple. Trinity College & UCD popular for BD students.'},
+  {id:'newzealand',flag:'🇳🇿',name:'New Zealand',region:'oceania',cost:'NZD 22,000–40,000/yr',
+   tags:['Friendly visa','Post-study work','Adventure'],currency:'NZD',
+   tuitionMin:22000,tuitionMax:40000,livingMin:1100,livingMax:1800,
+   visaFee:430,extraFee:'',processing:'3–8 weeks',
+   bankReq:'NZD 20,000/yr',
+   embassy:'NZ Embassy in New Delhi + VFS Dhaka',
+   docs:['Valid Passport','Offer of place','Bank statement NZD 20,000+','Health & travel insurance','IELTS 6.0+','Academic transcripts','Medical exam','Police clearance','Accommodation proof'],
+   scholarships:'NZ Government Scholarship, Manaaki, university awards',
+   work:'20 hrs/week',psw:'1–3 yrs post-study work',
+   bd:'University of Auckland & Otago popular. Lower competition than Australia.'},
+  {id:'japan',flag:'🇯🇵',name:'Japan',region:'asia',cost:'¥535,000–¥1,500,000/yr',
+   tags:['MEXT','Tech','Anime culture'],currency:'JPY',
+   tuitionMin:5000,tuitionMax:14000,livingMin:700,livingMax:1300,
+   visaFee:30,extraFee:'',processing:'4–8 weeks',
+   bankReq:'¥1.2 million/yr',
+   embassy:'Japan Embassy Dhaka (Gulshan)',
+   docs:['Valid Passport','Certificate of Eligibility (CoE)—university applies','Acceptance letter','Bank statement ¥1.2M+','Japanese N5–N4 / IELTS','Academic transcripts','Statement of purpose','Photo'],
+   scholarships:'MEXT (FULL), JASSO, Honjo International',
+   work:'28 hrs/week',psw:'Designated Activities visa',
+   bd:'MEXT fully funded with ¥143,000/month stipend! Apply via Japan Embassy Dhaka.'},
+  {id:'finland',flag:'🇫🇮',name:'Finland',region:'europe',cost:'€8,000–€18,000/yr',
+   tags:['Education quality','Sauna','Northern lights'],currency:'EUR',
+   tuitionMin:8000,tuitionMax:18000,livingMin:700,livingMax:1200,
+   visaFee:450,extraFee:'',processing:'1–3 months',
+   bankReq:'€6,720/yr',
+   embassy:'Finland Embassy in New Delhi + VFS Dhaka',
+   docs:['Valid Passport','Admission letter','Tuition payment','Bank statement €6,720+','Health insurance','IELTS 6.5','Academic transcripts','Motivation letter'],
+   scholarships:'Finland Scholarship, Erasmus+',
+   work:'30 hrs/week',psw:'2-year residence',
+   bd:'Aalto, Helsinki, Tampere top picks. Best education system globally.'},
+  {id:'italy',flag:'🇮🇹',name:'Italy',region:'europe',cost:'€900–€4,000/yr',
+   tags:['Low tuition','Heritage','Erasmus'],currency:'EUR',
+   tuitionMin:900,tuitionMax:4000,livingMin:700,livingMax:1300,
+   visaFee:50,extraFee:'Residence permit €100',processing:'1–3 months',
+   bankReq:'€6,358/yr',
+   embassy:'Italian Embassy Dhaka',
+   docs:['Valid Passport','Universitaly pre-enrolment','Acceptance letter','Bank statement €6,358+','Health insurance','Academic transcripts (DoV)','Italian B1 / IELTS 6.0','Accommodation proof','Visa form'],
+   scholarships:'Italian Government Scholarship (FULL), Invest Your Talent',
+   work:'20 hrs/week',psw:'1-year residence permit',
+   bd:'Lowest EU tuition. Polimi, Bocconi, Sapienza accept BD students.'},
+];
+
+const VISA_DATA = [
+  {flag:'🇬🇧',country:'UK',type:'Student Visa (Tier 4)',fee:524,curr:'£',proc:'3–8 weeks',notes:'Plus IHS £776/yr. VFS Global Dhaka. Biometrics required.'},
+  {flag:'🇨🇦',country:'Canada',type:'Study Permit',fee:235,curr:'CAD ',proc:'4–16 weeks',notes:'Biometrics CAD 85 extra. PAL & GIC mandatory.'},
+  {flag:'🇦🇺',country:'Australia',type:'Subclass 500',fee:1600,curr:'AUD ',proc:'4–6 weeks',notes:'CoE & OSHC required. GS statement key.'},
+  {flag:'🇩🇪',country:'Germany',type:'National Visa (D)',fee:75,curr:'€',proc:'6–12 weeks',notes:'APS certificate mandatory for BD. Block account required.'},
+  {flag:'🇺🇸',country:'USA',type:'F-1 Visa',fee:185,curr:'$',proc:'3–10 weeks',notes:'Plus SEVIS $350. Mandatory interview at US Embassy Dhaka.'},
+  {flag:'🇭🇺',country:'Hungary',type:'Long-Stay D Visa',fee:110,curr:'€',proc:'4–8 weeks',notes:'Apply at Hungary Embassy New Delhi. Stipendium covers fee.'},
+  {flag:'🇲🇹',country:'Malta',type:'National Visa D',fee:120,curr:'€',proc:'8–12 weeks',notes:'Apply via Identity Malta. Travel to Delhi may be needed.'},
+  {flag:'🇨🇿',country:'Czech Republic',type:'Long-term Visa',fee:100,curr:'€',proc:'8–12 weeks',notes:'Czech Embassy New Delhi. Super-legalization needed.'},
+  {flag:'🇵🇱',country:'Poland',type:'National D Visa',fee:80,curr:'€',proc:'4–8 weeks',notes:'VFS Dhaka. Polish embassy in New Delhi handles approval.'},
+  {flag:'🇳🇱',country:'Netherlands',type:'MVV + IND Permit',fee:228,curr:'€',proc:'4–8 weeks',notes:'University applies on your behalf in most cases.'},
+  {flag:'🇫🇷',country:'France',type:'Long-stay VLS-TS',fee:99,curr:'€',proc:'3–6 weeks',notes:'Campus France interview mandatory in Dhaka.'},
+  {flag:'🇸🇪',country:'Sweden',type:'Residence Permit',fee:1500,curr:'SEK ',proc:'4–8 weeks',notes:'Pay tuition first. Apply via Migrationsverket.'},
+  {flag:'🇮🇪',country:'Ireland',type:'Study Visa Stamp 2',fee:60,curr:'€',proc:'4–8 weeks',notes:'VFS Dhaka. Plus IRP €300 after arrival.'},
+  {flag:'🇳🇿',country:'New Zealand',type:'Student Visa',fee:430,curr:'NZD ',proc:'3–8 weeks',notes:'Online application + medical. VFS Dhaka.'},
+  {flag:'🇯🇵',country:'Japan',type:'Student Visa',fee:30,curr:'$',proc:'4–8 weeks',notes:'CoE first. Apply at Japan Embassy Dhaka.'},
+  {flag:'🇫🇮',country:'Finland',type:'Residence Permit',fee:450,curr:'€',proc:'1–3 months',notes:'Migri online + biometrics at VFS Dhaka.'},
+  {flag:'🇮🇹',country:'Italy',type:'Type D Student Visa',fee:50,curr:'€',proc:'1–3 months',notes:'Universitaly pre-enrolment + Italian Embassy Dhaka.'},
+];
+
+const RATES_TO_BDT = {USD:110,GBP:140,EUR:120,CAD:80.6,AUD:72,SEK:10.6,NZD:65,JPY:0.74,HUF:0.31,PLN:28,CZK:4.85,INR:1.32,BDT:1};
+const RATES_FROM_USD = {GBP:0.79,CAD:1.36,AUD:1.52,EUR:0.92,USD:1,SEK:10.4,NZD:1.69,JPY:148,HUF:355,PLN:3.93,CZK:22.7,BDT:110,INR:83};
+const FLAGS = {BDT:'🇧🇩',USD:'🇺🇸',EUR:'🇪🇺',GBP:'🇬🇧',CAD:'🇨🇦',AUD:'🇦🇺',SEK:'🇸🇪',NZD:'🇳🇿',JPY:'🇯🇵',HUF:'🇭🇺',PLN:'🇵🇱',CZK:'🇨🇿',INR:'🇮🇳'};
+
+const SUBJECT_MULT = {
+  cs:1.15, ai:1.25, data:1.20, eee:1.10, mech:1.05, civil:1.0, aero:1.30, biomed:1.25, cyber:1.20,
+  mba:1.40, finance:1.25, accounting:1.10, marketing:1.05, economics:1.05, supplychain:1.10,
+  medicine:1.80, dentistry:1.65, pharmacy:1.30, nursing:1.05, publichealth:1.10,
+  biotech:1.20, environmental:1.0, physics:1.0, chemistry:1.0,
+  law:1.30, architecture:1.20, design:1.10, ir:1.0, psychology:1.05, hospitality:0.95,
+};
+
+const SUBJECT_INFO = {
+  cs:'High demand globally. UK/Canada/Germany have strong CS programs. Average grad salary $70k–$110k.',
+  ai:'Premium pricing — top programs at MIT, ETH, CMU. STEM OPT in US (3 years).',
+  data:'In-demand field. Many 1-year MS programs in UK/Australia/Netherlands.',
+  eee:'BUET background highly respected abroad. Germany & Japan offer free/cheap programs.',
+  mech:'Strong programs in Germany (TU9), Sweden, USA. Internship opportunities common.',
+  civil:'Affordable in EU. Hungary, Poland, Czech Republic offer English programs €3k–6k/yr.',
+  aero:'Niche, expensive. UK (Cranfield), Germany (TU Munich), USA (Embry-Riddle).',
+  biomed:'Cross between engineering & medicine. Premium tuition. PhD funding common.',
+  cyber:'Hot field. UK, Australia, USA leading. Singapore has cheaper options.',
+  mba:'Most expensive subject. £30k–£80k/yr. ROI strong from top schools.',
+  finance:'CFA-aligned programs in UK/USA. Hong Kong & Singapore strong.',
+  accounting:'ACCA recognized in UK, Canada, Australia. Affordable in Malaysia, Ireland.',
+  marketing:'1-year MS programs popular in UK. Netherlands & Ireland strong digital marketing.',
+  economics:'LSE, Oxford, Bocconi top picks. Affordable in Germany & Italy.',
+  supplychain:'Growing field. Netherlands (Maastricht, Erasmus), Germany strong.',
+  medicine:'Most expensive — £30k–£70k/yr. MBBS abroad: Hungary, China, Russia, Philippines popular for BD.',
+  dentistry:'Hungary & Poland popular for affordable English-medium BDS programs.',
+  pharmacy:'UK, Canada, Australia recognized internationally. PharmD in US is doctorate.',
+  nursing:'High demand globally. UK, Canada, Germany have shortage — easier visa.',
+  publichealth:'1-year programs common. WHO partnerships at LSHTM, Johns Hopkins.',
+  biotech:'Germany, Sweden, Netherlands lead. Many fully-funded PhD positions.',
+  environmental:'Growing field. Sweden, Netherlands, Germany strong. Erasmus Mundus options.',
+  physics:'Strong PhD funding everywhere. CERN Switzerland prestigious.',
+  chemistry:'Lab-based. Germany, Switzerland, Netherlands strong. Many funded PhDs.',
+  law:'LLM 1-year in UK/USA. Bar exam separate. Affordable in Hungary, Poland.',
+  architecture:'5–6 year programs. Italy, UK, USA top. RIBA accreditation important.',
+  design:'UK (RCA, CSM), Italy (Domus), USA (Parsons) lead. Portfolio essential.',
+  ir:'LSE, Sciences Po, Georgetown top. Affordable at CEU Budapest.',
+  psychology:'BPS-accredited in UK. APA in USA. Long PhD path for clinical work.',
+  hospitality:'Switzerland (Glion, Les Roches) top — but expensive. Malaysia, Ireland affordable.',
+};
+
+const FLIGHT_COSTS_BDT = {uk:130000,canada:140000,australia:160000,germany:120000,usa:150000,hungary:130000,malta:140000,czech:130000,poland:120000,netherlands:120000,france:120000,sweden:135000,ireland:130000,newzealand:170000,japan:80000,finland:135000,italy:115000};
+
+const TIPS = {
+  uk:'EBL & City Bank offer student-friendly forex. UKVI-approved IELTS at British Council Dhaka. CAS interview prep is critical!',
+  canada:'GIC mandatory: open with Scotia, RBC, or CIBC online from BD. PCC takes 2–3 weeks—apply early. New PAL requirement.',
+  australia:'Tightened "Genuine Student" rules — show strong return ties. AUD has weakened, slightly cheaper than 2023.',
+  germany:'APS Dhaka mandatory — takes 4–6 weeks — apply early! DAAD scholarship fully funded with €992+/month stipend.',
+  usa:'F-1 visa interview at Dhaka—book 2 months ahead. Refusal rate ~30%. Strong CGPA (3.5+) and GRE/GMAT scores essential.',
+  hungary:'🌟 Stipendium Hungaricum is FULLY FUNDED + monthly stipend. 100+ BD students yearly. Apply Jan–Feb at tka.hu.',
+  malta:'Growing English-medium hub. Less competitive than UK/Australia. iGaming & FinTech hiring graduates.',
+  czech:'Free if studied in Czech! English programs €2k–€6k/yr. Charles University in Prague is highly ranked.',
+  poland:'Affordable EU degree. Krakow & Warsaw popular. NAWA scholarship covers tuition + living.',
+  netherlands:'University handles MVV visa—easier process. Holland Scholarship gives €5,000. TU Delft is top-ranked.',
+  france:'Campus France interview MANDATORY—prepare well. Eiffel Excellence covers full tuition + €1,181/mo stipend.',
+  sweden:'SISGP scholarship is fully funded—covers tuition, monthly SEK 10k allowance, insurance & travel.',
+  ireland:'Stamp 1G gives 2-year work permit after Master\'s. Tech hub with Google/Meta/Apple offices in Dublin.',
+  newzealand:'Lower competition than Australia. Friendly visa policy. University of Auckland is QS top 100.',
+  japan:'MEXT is fully funded with ¥143,000/month stipend! Apply via Japan Embassy Dhaka. Need basic Japanese.',
+  finland:'Best education system globally. Aalto, Helsinki are top. Free if you can study in Finnish/Swedish.',
+  italy:'Lowest EU tuition (€900–€4k). Italian Government Scholarship is fully funded. Polimi & Bocconi prestigious.',
+};
+
+let displayCurrency = 'BDT';
+
+function fmtMoney(usd, cur) {
+  cur = cur || displayCurrency;
+  if(cur === 'BDT') {
+    const bdt = usd * 110;
+    if(bdt >= 10000000) return '৳ ' + (bdt/10000000).toFixed(2) + ' Cr';
+    if(bdt >= 100000) return '৳ ' + (bdt/100000).toFixed(2) + ' Lac';
+    return '৳ ' + Math.round(bdt).toLocaleString('en-IN');
+  }
+  return '$' + Math.round(usd).toLocaleString();
+}
+
+function fmtLocal(amount, currCode) {
+  const symbols = {GBP:'£',CAD:'CAD ',AUD:'AUD ',EUR:'€',USD:'$',SEK:'SEK ',NZD:'NZD ',JPY:'¥',HUF:'HUF ',PLN:'PLN ',CZK:'CZK '};
+  return (symbols[currCode]||'') + Math.round(amount).toLocaleString();
+}
+
+function setCurrency(c, btn) {
+  displayCurrency = c;
+  document.querySelectorAll('.curr-opt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateCalc();
+  renderCountries(getFilteredCountries());
+  renderCompare();
+}
+
+function fillDropdowns() {
+  const main = document.getElementById('dest-country');
+  main.innerHTML = COUNTRIES.map(c => `<option value="${c.id}">${c.flag} ${c.name}</option>`).join('');
+  ['cmp-1','cmp-2','cmp-3'].forEach((id, idx) => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '<option value="">— None —</option>' + COUNTRIES.map(c => `<option value="${c.id}">${c.flag} ${c.name}</option>`).join('');
+    if(idx===0) sel.value = 'uk';
+    if(idx===1) sel.value = 'germany';
+    if(idx===2) sel.value = 'hungary';
+  });
+}
+
+function updateCalc() {
+  const cId = document.getElementById('dest-country').value;
+  const c = COUNTRIES.find(x => x.id === cId);
+  if(!c) return;
+  const level = document.getElementById('study-level').value;
+  const subject = document.getElementById('subject').value;
+  const duration = parseInt(document.getElementById('duration').value);
+  const accom = document.getElementById('accom').value;
+  const cityTier = document.getElementById('city-tier').value;
+  const food = parseInt(document.getElementById('food-budget').value);
+  const transport = parseInt(document.getElementById('transport').value);
+  const leisure = parseInt(document.getElementById('leisure').value);
+
+  document.getElementById('food-val').textContent = '$' + food;
+  document.getElementById('tr-val').textContent = '$' + transport;
+  document.getElementById('lei-val').textContent = '$' + leisure;
+  document.getElementById('subject-info').innerHTML = '💡 ' + (SUBJECT_INFO[subject] || '');
+  document.getElementById('subject-info').classList.add('show');
+
+  const levelMult = {bachelors:1.0,masters:1.1,phd:0.5,diploma:0.7,language:0.5}[level];
+  const subjectMult = SUBJECT_MULT[subject] || 1;
+  const cityMult = {capital:1.3,mid:1.0,small:0.75}[cityTier];
+  const accomMult = {shared:1.0,dorm:1.15,private:1.7,homestay:1.1}[accom];
+
+  const tuitionLocalAvg = (c.tuitionMin + c.tuitionMax)/2;
+  const localToUsd = c.currency==='USD'?1 : (RATES_FROM_USD[c.currency] ? 1/RATES_FROM_USD[c.currency] : 1);
+  const tuitionUsdYear = tuitionLocalAvg * localToUsd * levelMult * subjectMult;
+  const totalTuitionUsd = tuitionUsdYear * duration;
+
+  const baseLiving = (c.livingMin + c.livingMax)/2;
+  const accomMonthlyUsd = baseLiving * 0.55 * accomMult * cityMult;
+  const totalAccomUsd = accomMonthlyUsd * 12 * duration;
+  const totalFoodUsd = food * 12 * duration;
+  const totalTransUsd = transport * 12 * duration;
+  const totalLeisureUsd = leisure * 12 * duration;
+  const visaUsd = c.visaFee * (c.currency==='USD'?1:localToUsd) + (c.id==='uk' ? 776*duration*1.27 : 0) + (c.id==='usa'?350:0);
+  const booksUsd = 600 * duration;
+  const flightUsd = (FLIGHT_COSTS_BDT[c.id] || 130000) / 110;
+  const grandUsd = totalTuitionUsd + totalAccomUsd + totalFoodUsd + totalTransUsd + totalLeisureUsd + visaUsd + booksUsd + flightUsd;
+  const monthlyUsd = (grandUsd - flightUsd - visaUsd - booksUsd) / (duration*12);
+
+  const showLocal = displayCurrency === 'LOCAL';
+  const fmt = u => showLocal ? fmtLocal(u/localToUsd, c.currency) : fmtMoney(u);
+
+  document.getElementById('result-total').textContent = fmt(grandUsd);
+  document.getElementById('res-duration').textContent = duration;
+  document.getElementById('res-country').textContent = c.name;
+  document.getElementById('res-currency').textContent = showLocal ? c.currency : displayCurrency;
+  document.getElementById('r-tuition').textContent = fmt(totalTuitionUsd);
+  document.getElementById('r-accom').textContent = fmt(totalAccomUsd);
+  document.getElementById('r-food').textContent = fmt(totalFoodUsd);
+  document.getElementById('r-transport').textContent = fmt(totalTransUsd);
+  document.getElementById('r-leisure').textContent = fmt(totalLeisureUsd);
+  document.getElementById('r-visa').textContent = fmt(visaUsd);
+  document.getElementById('r-books').textContent = fmt(booksUsd);
+  document.getElementById('r-flights').textContent = fmt(flightUsd);
+  document.getElementById('r-monthly').textContent = fmt(monthlyUsd);
+  document.getElementById('tips-box').textContent = TIPS[c.id] || '';
+}
+
+function resetCalc() {
+  document.getElementById('dest-country').value = 'uk';
+  document.getElementById('study-level').value = 'bachelors';
+  document.getElementById('subject').value = 'cs';
+  document.getElementById('duration').value = '3';
+  document.getElementById('accom').value = 'shared';
+  document.getElementById('city-tier').value = 'mid';
+  document.getElementById('food-budget').value = 350;
+  document.getElementById('transport').value = 100;
+  document.getElementById('leisure').value = 150;
+  updateCalc();
+}
+
+function printResult() { window.print(); }
+
+function shareSite() {
+  if(navigator.share) {
+    navigator.share({title:'GlobalPath',text:'Study abroad cost calculator for Bangladeshi students',url:window.location.href}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(()=>{
+      alert('Link copied to clipboard!');
+    }).catch(()=>alert('Copy this link: '+window.location.href));
+  }
+}
+
+let currentRegion = 'all';
+function getFilteredCountries() {
+  const q = (document.getElementById('country-search').value||'').toLowerCase();
+  let list = COUNTRIES;
+  if(currentRegion !== 'all') list = list.filter(c => c.region === currentRegion);
+  if(q) list = list.filter(c => c.name.toLowerCase().includes(q));
+  return list;
+}
+function filterCountries() { renderCountries(getFilteredCountries()); }
+function filterRegion(r, btn) {
+  currentRegion = r;
+  document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCountries(getFilteredCountries());
+}
+
+function renderCountries(list) {
+  const grid = document.getElementById('country-grid');
+  grid.innerHTML = list.map(c => {
+    const tagClasses = c.tags.map(t => {
+      if(t.toLowerCase().includes('free') || t.toLowerCase().includes('affordable')) return 'tag green-tag';
+      if(t.toLowerCase().includes('english') || t.toLowerCase().includes('hub')) return 'tag blue-tag';
+      return 'tag';
+    });
+    const localToUsd = c.currency==='USD'?1 : (RATES_FROM_USD[c.currency] ? 1/RATES_FROM_USD[c.currency] : 1);
+    const tuitionUsd = (c.tuitionMin+c.tuitionMax)/2 * localToUsd;
+    const tuitionLac = (tuitionUsd * 110 / 100000).toFixed(1);
+    return `
+      <div class="country-card" onclick="openDetail('${c.id}')" tabindex="0" onkeydown="if(event.key==='Enter')openDetail('${c.id}')">
+        <div class="country-flag">${c.flag}</div>
+        <div class="country-name">${c.name}</div>
+        <div class="country-cost">${c.cost}</div>
+        <div class="country-bdt">~৳ ${tuitionLac} Lac/yr (avg tuition)</div>
+        <div class="country-tags">${c.tags.map((t,i)=>`<span class="${tagClasses[i]}">${t}</span>`).join('')}</div>
+      </div>`;
+  }).join('');
+}
+
+function openDetail(id) {
+  const c = COUNTRIES.find(x => x.id === id);
+  if(!c) return;
+  const localToUsd = c.currency==='USD'?1 : (RATES_FROM_USD[c.currency] ? 1/RATES_FROM_USD[c.currency] : 1);
+  const tuitionAvgBdt = ((c.tuitionMin+c.tuitionMax)/2) * localToUsd * 110;
+  const visaBdt = c.visaFee * localToUsd * 110;
+  const livingMonBdt = ((c.livingMin+c.livingMax)/2) * 110;
+
+  document.getElementById('detail-box').innerHTML = `
+    <div class="detail-header">
+      <div class="detail-flag">${c.flag}</div>
+      <div>
+        <div class="detail-title">${c.name}</div>
+        <div class="detail-subtitle">Average Tuition: ৳ ${(tuitionAvgBdt/100000).toFixed(1)} Lac/yr</div>
+      </div>
+      <button class="close-btn" onclick="closeDetail()">✕</button>
+    </div>
+
+    <div class="cost-grid">
+      <div class="cost-item"><div class="cost-item-label">Visa Fee</div><div class="cost-item-val">${c.currency} ${c.visaFee}</div><div class="cost-item-sub">≈ ৳ ${Math.round(visaBdt/1000)}k</div></div>
+      <div class="cost-item"><div class="cost-item-label">Processing</div><div class="cost-item-val">${c.processing}</div></div>
+      <div class="cost-item"><div class="cost-item-label">Monthly Living</div><div class="cost-item-val">${c.currency} ${c.livingMin}–${c.livingMax}</div><div class="cost-item-sub">≈ ৳ ${Math.round(livingMonBdt/1000)}k avg</div></div>
+      <div class="cost-item"><div class="cost-item-label">Work Allowed</div><div class="cost-item-val" style="font-size:12px;">${c.work}</div></div>
+    </div>
+
+    <div class="info-block orange" style="margin-bottom:1.2rem;">
+      <strong>🇧🇩 For Bangladeshi Students:</strong><br>${c.bd}
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">📋 Required Documents</div>
+      ${c.docs.map(d => `<div class="doc-item"><span class="doc-check">✓</span><span>${d}</span></div>`).join('')}
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">💼 Embassy / Application Center</div>
+      <div class="info-block blue">${c.embassy}</div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">💰 Financial Requirement</div>
+      <div class="info-block">${c.bankReq}</div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">🎓 Scholarships Available</div>
+      <div class="info-block green">${c.scholarships}</div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">🚀 Post-Study Work</div>
+      <div class="info-block">${c.psw}</div>
+    </div>
+
+    <div class="detail-actions">
+      <button class="action-btn primary" onclick="window.print()">🖨️ Print This</button>
+      <button class="action-btn" onclick="closeDetail()">Close</button>
+    </div>
+  `;
+  document.getElementById('detail-overlay').classList.add('open');
+}
+function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');}
+
+function renderVisa() {
+  document.getElementById('visa-grid').innerHTML = VISA_DATA.map(v => {
+    const usdEq = v.curr==='$' ? v.fee : v.fee * (
+      v.curr==='£'?1.27 : v.curr==='€'?1.09 : v.curr==='CAD '?0.74 : v.curr==='AUD '?0.66 :
+      v.curr==='SEK '?0.097 : v.curr==='NZD '?0.59 : 1);
+    const bdt = usdEq * 110;
+    return `
+      <div class="visa-card">
+        <div class="visa-header"><div class="visa-flag">${v.flag}</div><div><div class="visa-country">${v.country}</div><div class="visa-type">${v.type}</div></div></div>
+        <div class="fee-badge">
+          <div class="fee-amount">${v.curr}${v.fee.toLocaleString()}</div>
+          <div class="fee-bdt">≈ ৳ ${Math.round(bdt).toLocaleString('en-IN')}</div>
+          <div class="fee-label">Application Fee</div>
+        </div>
+        <div class="visa-info"><b>Processing:</b> ${v.proc}<br><br>${v.notes}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderCompare() {
+  const ids = ['cmp-1','cmp-2','cmp-3'].map(id => document.getElementById(id).value).filter(v => v);
+  const out = document.getElementById('compare-output');
+  if(ids.length === 0) {
+    out.innerHTML = '<div class="card" style="text-align:center;color:var(--text-muted);font-family:Lora,serif;font-size:14px">Select countries above to compare</div>';
+    return;
+  }
+  const cs = ids.map(id => COUNTRIES.find(c => c.id === id)).filter(Boolean);
+  const fmt = (usd) => fmtMoney(usd);
+
+  const rows = [
+    ['Tuition (avg/yr)', cs.map(c => {
+      const lToU = c.currency==='USD'?1 : 1/(RATES_FROM_USD[c.currency]||1);
+      return fmt((c.tuitionMin+c.tuitionMax)/2 * lToU);
+    })],
+    ['Living (mo)', cs.map(c => fmt((c.livingMin+c.livingMax)/2))],
+    ['Visa Fee', cs.map(c => {
+      const lToU = c.currency==='USD'?1 : 1/(RATES_FROM_USD[c.currency]||1);
+      return fmt(c.visaFee * lToU);
+    })],
+    ['Processing', cs.map(c => c.processing)],
+    ['Bank Proof', cs.map(c => c.bankReq.split(' ').slice(0,4).join(' ')+'...')],
+    ['Work Allowed', cs.map(c => c.work)],
+    ['Post-Study', cs.map(c => c.psw)],
+    ['Top Scholarship', cs.map(c => c.scholarships.split(',')[0])],
+    ['Flight (Dhaka)', cs.map(c => '৳ ' + ((FLIGHT_COSTS_BDT[c.id]||130000)/1000) + 'k')],
+  ];
+
+  out.innerHTML = `
+    <div class="card">
+      <div class="compare-grid">
+        ${cs.map(c => `
+          <div class="compare-col">
+            <div class="compare-col-header">
+              <div style="font-size:24px">${c.flag}</div>
+              <div><div style="font-family:Poppins;font-weight:700;font-size:14px">${c.name}</div><div style="font-size:11px;color:var(--text-muted)">${c.cost}</div></div>
+            </div>
+            ${rows.map(r => `<div class="compare-row"><b style="color:var(--text-muted);font-size:10px;text-transform:uppercase">${r[0]}</b></div><div style="font-size:13px;margin-bottom:6px;font-family:Poppins;font-weight:500">${r[1][cs.indexOf(c)]}</div>`).join('')}
+            <button class="action-btn primary" style="margin-top:12px;width:100%" onclick="openDetail('${c.id}')">View Details →</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function convertCurrency() {
+  const from = document.getElementById('from-currency').value;
+  const to = document.getElementById('to-currency').value;
+  const amount = parseFloat(document.getElementById('conv-amount').value) || 0;
+  document.getElementById('from-flag').textContent = FLAGS[from] || '🏳️';
+  document.getElementById('to-flag').textContent = FLAGS[to] || '🏳️';
+  const fromBdt = RATES_TO_BDT[from] || 1;
+  const toBdt = RATES_TO_BDT[to] || 1;
+  const result = amount * fromBdt / toBdt;
+  document.getElementById('conv-result-val').textContent = (FLAGS[to]||'') + ' ' + result.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + ' ' + to;
+  document.getElementById('conv-result-label').textContent = `${amount.toLocaleString()} ${from} = ${result.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} ${to}`;
+}
+
+function swapCurrencies() {
+  const f = document.getElementById('from-currency');
+  const t = document.getElementById('to-currency');
+  const tmpVal = f.value;
+  const fOpts = Array.from(f.options).map(o => o.value);
+  const tOpts = Array.from(t.options).map(o => o.value);
+  if(tOpts.includes(tmpVal)) f.value = t.value;
+  if(fOpts.includes(t.value)) t.value = tmpVal;
+  convertCurrency();
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if(tab === 'compare') renderCompare();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+fillDropdowns();
+renderCountries(COUNTRIES);
+renderVisa();
+updateCalc();
+convertCurrency();
+renderCompare();
+
+document.getElementById('detail-overlay').addEventListener('click', function(e) {
+  if(e.target === this) closeDetail();
+});
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeDetail(); });
+</script>
+</body>
+</html>
